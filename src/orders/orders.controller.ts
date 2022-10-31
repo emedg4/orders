@@ -2,6 +2,7 @@ import { Controller, Get, Logger } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { NewOrderService } from '../microservices/newOrder/newOrder.service';
 import { CreateNewOrder } from './dto/createNewOrder';
+import { ListOrders } from './dto/listOrders';
 import { OrdersEntity } from './entities/orders.entity';
 import { OrdersService } from './orders.service';
 
@@ -19,6 +20,8 @@ export class OrdersController {
         try {
             const order: OrdersEntity = await this.ordersService.createNewOrder(data, context);
             this.newOrderService.ack(context)
+            const listOrders: ListOrders = { pedido: order.Pedido, estado: order.EstatusPago}
+            this.ordersService.listOrders(listOrders);
             return order;
             
         } catch (error) {

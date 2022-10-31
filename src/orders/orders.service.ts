@@ -1,9 +1,11 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { RmqContext } from "@nestjs/microservices";
+import { Inject, Injectable, Logger } from "@nestjs/common";
+import { ClientProxy, RmqContext } from "@nestjs/microservices";
 import { CreateNewOrder } from "./dto/createNewOrder";
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrdersEntity } from "./entities/orders.entity";
 import { Repository } from 'typeorm';
+import { LIST_ORDERS } from "./constant/services";
+import { ListOrders } from "./dto/listOrders";
 
 
 
@@ -11,6 +13,7 @@ import { Repository } from 'typeorm';
 export class OrdersService {
     private logger: Logger;
     constructor(
+        @Inject( LIST_ORDERS ) private listOrdersClient: ClientProxy,
         @InjectRepository(OrdersEntity) private ordersRepository: Repository<OrdersEntity>
     ){
         this.logger = new Logger(OrdersService.name);
@@ -26,6 +29,7 @@ export class OrdersService {
         newOrder.Pedido = data.pedido;
         newOrder.Tienda = data.tienda;
         newOrder.Vitrina = data.vitrina;
+        newOrder.EstatusPago = data.estatus_pago;
 
         const orderObj = this.ordersRepository.create(newOrder);
         const createdOrder: OrdersEntity = await this.ordersRepository.save(orderObj)
@@ -42,5 +46,13 @@ export class OrdersService {
         this.logger.log(JSON.stringify(orders), "Getting all orders")
 
         return orders
+    }
+
+    listOrders(data: ListOrders) {
+
+        this.listOrdersClient.emit("listOrders", data);
+        this.logger.log(data, "Listando orden al Microservicio de listado.");
+
+        return
     }
 }

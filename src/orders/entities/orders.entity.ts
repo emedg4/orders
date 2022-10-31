@@ -27,4 +27,8 @@ export class OrdersEntity {
     @Column()
     public FechaModificacion: Date;
 
+    @Column()
+    public EstatusPago: string;
+
+
 }

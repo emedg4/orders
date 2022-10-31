@@ -13,5 +13,8 @@ export class CreateNewOrder {
     public cliente: string;
 
     public vitrina: string;
+
+    public estatus_pago: string;
+
     
 }

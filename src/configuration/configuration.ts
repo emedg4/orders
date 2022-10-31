@@ -7,6 +7,7 @@ export default () => ({
         pass: process.env.RABBITMQ_PASSWORD,
         host: process.env.RABBITMQ_HOST,
         new_order_queue: process.env.NEW_ORDER_QUEUE,
+        list_orders_queue: process.env.LIST_ORDERS_QUEUE,
         url: process.env.RABBITMQ_URL
     },
     db: {
