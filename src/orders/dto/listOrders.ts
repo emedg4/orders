@@ -1,6 +1,6 @@
 export class ListOrders {
 
-    public pedido: string;
+    public actual: string;
 
-    public estado: string;
+    public previo: any;
 }

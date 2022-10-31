@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NewOrderService } from './microservices/newOrder/newOrder.service';
 import { ConfigService } from '@nestjs/config';
-import { ListOrdersService } from './microservices/listOrders/listOrders.service';
 
 
 

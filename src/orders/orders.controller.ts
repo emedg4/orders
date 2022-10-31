@@ -18,10 +18,10 @@ export class OrdersController {
     @EventPattern("newOrder")
     async getNewOrder(@Payload() data: CreateNewOrder, @Ctx() context: RmqContext){
         try {
-            const order: OrdersEntity = await this.ordersService.createNewOrder(data, context);
+            const order: string = await this.ordersService.createNewOrder(data, context);
             this.newOrderService.ack(context)
-            const listOrders: ListOrders = { pedido: order.Pedido, estado: order.EstatusPago}
-            this.ordersService.listOrders(listOrders);
+            const listOrders: ListOrders = { actual: order, previo: null}
+            this.ordersService.listNewOrders(listOrders);
             return order;
             
         } catch (error) {

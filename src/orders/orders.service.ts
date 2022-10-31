@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { OrdersEntity } from "./entities/orders.entity";
 import { Repository } from 'typeorm';
 import { LIST_ORDERS } from "./constant/services";
+import { PAGADO, SINPAGAR } from "./constant/Estatus"
 import { ListOrders } from "./dto/listOrders";
 
 
@@ -19,7 +20,7 @@ export class OrdersService {
         this.logger = new Logger(OrdersService.name);
     }
 
-    async createNewOrder(data: CreateNewOrder, context: RmqContext): Promise<OrdersEntity> {
+    async createNewOrder(data: CreateNewOrder, context: RmqContext): Promise<string> {
         const newOrder: OrdersEntity = new OrdersEntity();
         newOrder.Cliente = data.cliente;
         newOrder.FechaCreacion = data.fecha_creacion;
@@ -36,7 +37,18 @@ export class OrdersService {
 
         this.logger.log(data, "Created a new order into Database");
 
-        return createdOrder
+        let estatus: string;
+        if(createdOrder.EstatusPago == "Pagado"){
+            estatus = PAGADO
+            
+            return estatus
+        }
+        else {
+            estatus = SINPAGAR
+            
+            return estatus
+        }
+
         
     }
     
@@ -48,7 +60,7 @@ export class OrdersService {
         return orders
     }
 
-    listOrders(data: ListOrders) {
+    listNewOrders(data: ListOrders) {
 
         this.listOrdersClient.emit("listOrders", data);
         this.logger.log(data, "Listando orden al Microservicio de listado.");
