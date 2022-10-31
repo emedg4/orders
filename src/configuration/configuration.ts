@@ -8,6 +8,7 @@ export default () => ({
         host: process.env.RABBITMQ_HOST,
         new_order_queue: process.env.NEW_ORDER_QUEUE,
         list_orders_queue: process.env.LIST_ORDERS_QUEUE,
+        modify_order_queue: process.env.MODIFY_ORDER_QUEUE,
         url: process.env.RABBITMQ_URL
     },
     db: {

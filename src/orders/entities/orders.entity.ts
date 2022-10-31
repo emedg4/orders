@@ -30,5 +30,8 @@ export class OrdersEntity {
     @Column()
     public EstatusPago: string;
 
+    @Column()
+    public EstatusPedido: string;
+
 
 }

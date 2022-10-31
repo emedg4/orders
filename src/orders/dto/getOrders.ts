@@ -1,17 +1,24 @@
-export class GetOrders {
+export class GetOrdersDTO {
 
-    public pedido: string;
+    public Pedido: string;
 
-    public fecha_creacion: Date;
+    public MetodoPago: string;
 
-    public metodo_pago: string;
+    public Tienda: string;
 
-    public tienda: string;
+    public MetodoEnvio: string;
 
-    public metodo_envio: string;
+    public Cliente: string;
 
-    public cliente: string;
+    public Vitrina: string;
 
-    public vitrina: string;
-    
+    public FechaCreacion: Date;
+
+    public FechaModificacion: Date;
+
+    public EstatusPago: string;
+
+    public EstatusPedido: string;
+
+
 }
