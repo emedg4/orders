@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { RmqService } from './rmq/rmq.service';
+import { NewOrderService } from './microservices/newOrder/newOrder.service';
 import { ConfigService } from '@nestjs/config';
 
 
@@ -9,10 +9,10 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  const rmqService = app.get<RmqService>(RmqService);
+  const newOrderService = app.get<NewOrderService>(NewOrderService);
   const configService = app.get(ConfigService)
 
-  app.connectMicroservice(rmqService.getOptions(configService.get('rbmq.queue_name')))
+  app.connectMicroservice(newOrderService.getOptions(configService.get('rbmq.new_order_queue')))
 
   await app.startAllMicroservices();
   

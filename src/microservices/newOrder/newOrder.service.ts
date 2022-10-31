@@ -4,14 +4,14 @@ import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
-export class RmqService {
+export class NewOrderService {
     constructor(private readonly configService: ConfigService){}
     getOptions(queue: string, noAck = false): RmqOptions {
         return {
             transport: Transport.RMQ,
             options: {
                 urls: [this.configService.get<string>('rbmq.url')],
-                queue: this.configService.get<string>('rbmq.queue_name'),
+                queue: queue,
                 noAck,
                 persistent: true
 

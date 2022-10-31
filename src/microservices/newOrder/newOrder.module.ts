@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { RmqService } from './rmq.service';
+import { NewOrderService } from './newOrder.service';
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { ConfigService } from '@nestjs/config'
 
@@ -8,13 +8,13 @@ interface RmqModuleOptions {
 }
 
 @Module({
-  providers: [RmqService],
-  exports: [RmqService]
+  providers: [NewOrderService],
+  exports: [NewOrderService]
 })
-export class RmqModule {
+export class NewOrderModule {
   static register({ name }: RmqModuleOptions ): DynamicModule {
     return {
-      module: RmqModule,
+      module: NewOrderModule,
       imports: [
         ClientsModule.registerAsync([
           {
@@ -23,7 +23,7 @@ export class RmqModule {
               transport: Transport.RMQ,
               options: {
                 urls: [configService.get<string>('rbmq.url')],
-                queue: configService.get<string>('rbmq.queue_name')
+                queue: configService.get<string>('rbmq.new_order_queue')
               },
             }),
             inject: [ConfigService]
