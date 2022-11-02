@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Query } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { ModifyOrderMicroserviceService } from 'src/microservices/modifyOrder/modifyOrderMicroservice.service';
 import { NewOrderService } from '../microservices/newOrder/newOrder.service';
@@ -63,9 +63,9 @@ export class OrdersController {
     }
 
     @Get("getByFilter")
-    async getByFilter(@Query() query: any) {
+    async getByStatusFilter(@Query() query: any) {
         try {
-            const filtrado = await this.ordersService.getByFilter(query);
+            const filtrado = await this.ordersService.getByStatusFilter(query);
             
             return filtrado
 
@@ -74,5 +74,19 @@ export class OrdersController {
             
             return
         }
+    }
+
+    @Get("getByHeavyFilter")
+    async getByHeavyFilter(@Body() body: any) {
+        try {
+            const filtrado = await this.ordersService.getByHeavyFilter(body);
+            
+            return filtrado
+
+        } catch (error) {
+            this.logger.error(error)
+            
+            return
+        }        
     }
 }

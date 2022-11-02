@@ -61,13 +61,21 @@ export class OrdersService {
         return orderToList;
     }
 
-    async getByFilter( filter: any ) {
+    async getByStatusFilter( filter: any ) {
 
         const filtrado = await this.ordersRepository.findBy({ EstatusPedido: filter.filtro });
 
         this.logger.log(`Logueando por el filtro ${filter}`, "getByFilter")
 
         return filtrado;
+    }
+
+    async getByHeavyFilter(filter: any ) {
+        const filtered = await this.ordersRepository.findBy(filter);
+
+        this.logger.log(`Filtered by ${filter}`)
+
+        return filtered;
     }
     
     async getAll(): Promise<Array<OrdersEntity>> {
