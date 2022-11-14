@@ -1,7 +1,9 @@
 import { Body, Controller, Get, Logger, Query } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import { fsyncSync } from 'fs';
 import { ModifyOrderMicroserviceService } from 'src/microservices/modifyOrder/modifyOrderMicroservice.service';
 import { NewOrderService } from '../microservices/newOrder/newOrder.service';
+import { CreatedOrder } from './dto/createdOrder';
 import { CreateNewOrder } from './dto/createNewOrder';
 import { GetOrdersDTO } from './dto/getOrders';
 import { ListOrders } from './dto/listOrders';
@@ -21,10 +23,14 @@ export class OrdersController {
     @EventPattern("newOrder")
     async getNewOrder(@Payload() data: CreateNewOrder, @Ctx() context: RmqContext){
         try {
-            const order: string = await this.ordersService.createNewOrder(data, context);
+            const order: CreatedOrder = await this.ordersService.createNewOrder(data, context);
             this.newOrderService.ack(context)
-            const listOrders: ListOrders = { actual: order, previo: null}
+
+            const listOrders: ListOrders = { actual: order.status, previo: null}
             this.ordersService.listOrders(listOrders);
+            if(data.estatus_pago == "Sin Pagar"){
+                this.ordersService.sendToUnpaidOrdersQueue(order);
+            }
             return;
             
         } catch (error) {
@@ -35,7 +41,6 @@ export class OrdersController {
     @EventPattern("modifyOrder")
     async modifyOrderStatus(@Payload() data: ModifyOrderStatusDTO, @Ctx() context: RmqContext) {
         try {
-            console.log("estoy llegando")
             const orderToList: ListOrders = await this.ordersService.modifyOrderStatus(data)
             this.modifyOrderMicroserviceService.ack(context)
 
@@ -61,7 +66,11 @@ export class OrdersController {
             this.logger.error(error)
         }
     }
-
+    /**
+     * Service consumed by ListORders
+     * @param query 
+     * @returns 
+     */
     @Get("getByFilter")
     async getByStatusFilter(@Query() query: any) {
         try {

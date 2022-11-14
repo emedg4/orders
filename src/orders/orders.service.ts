@@ -4,11 +4,12 @@ import { CreateNewOrder } from "./dto/createNewOrder";
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrdersEntity } from "./entities/orders.entity";
 import { Repository } from 'typeorm';
-import { LIST_ORDERS } from "./constant/services";
+import { LIST_ORDERS, UNPAID_ORDERS } from "./constant/services";
 import { INGRESADOS, SINPAGAR, PAGADO } from "./constant/Estatus"
 import { ListOrders } from "./dto/listOrders";
 import { GetOrdersDTO } from "./dto/getOrders";
 import { ModifyOrderStatusDTO } from "./dto/modifyOrderStatus";
+import { CreatedOrder } from "./dto/createdOrder";
 
 
 
@@ -17,14 +18,14 @@ export class OrdersService {
     private logger: Logger;
     constructor(
         @Inject( LIST_ORDERS ) private listOrdersClient: ClientProxy,
+        @Inject( UNPAID_ORDERS ) private unpaidOrdersClient: ClientProxy,
         @InjectRepository(OrdersEntity) private ordersRepository: Repository<OrdersEntity>
     ){
         this.logger = new Logger(OrdersService.name);
     }
 
-    async createNewOrder(data: CreateNewOrder, context: RmqContext): Promise<string> {
-        const estatus_pedido: string = data.estatus_pago == PAGADO ? INGRESADOS : SINPAGAR;
-        console.log(estatus_pedido, data.estatus_pago)
+    async createNewOrder(data: CreateNewOrder, context: RmqContext): Promise<CreatedOrder> {
+        const esPedidoPagado: boolean = data.estatus_pago == PAGADO ? true : false;
         
         const newOrder: OrdersEntity = new OrdersEntity();
         newOrder.Cliente = data.cliente;
@@ -36,16 +37,24 @@ export class OrdersService {
         newOrder.Tienda = data.tienda;
         newOrder.Vitrina = data.vitrina;
         newOrder.EstatusPago = data.estatus_pago;
-        newOrder.EstatusPedido = estatus_pedido;
+        newOrder.EstatusPedido = INGRESADOS;
 
+        //Crear en la base de datos la nueva orden
         const orderObj = this.ordersRepository.create(newOrder);
         const createdOrder: OrdersEntity = await this.ordersRepository.save(orderObj)
 
-        this.logger.log(data, "Created a new order into Database");
-
-        const status: string = createdOrder.EstatusPago == PAGADO ? INGRESADOS : SINPAGAR;
+        this.logger.log("Created a new order into Database");
         
-        return status;
+        const response: CreatedOrder = {
+            status: createdOrder.EstatusPedido,
+            pedido: createdOrder.Pedido,
+            tienda: createdOrder.Tienda,
+            vitrina: createdOrder.Vitrina,
+            cliente: createdOrder.Cliente,
+            fechaCreacion: createdOrder.FechaCreacion
+            
+        }
+        return response;
     }
 
     async modifyOrderStatus(data: ModifyOrderStatusDTO): Promise<ListOrders> {
@@ -89,7 +98,15 @@ export class OrdersService {
     listOrders(data: ListOrders) {
 
         this.listOrdersClient.emit("listOrders", data);
-        this.logger.log(data, "Listando orden al Microservicio de listado.");
+        this.logger.log("Listando orden al Microservicio de listado.");
+
+        return
+    }
+
+    sendToUnpaidOrdersQueue(data: CreatedOrder) {
+
+        this.unpaidOrdersClient.emit("Unpaid_Orders", data)
+        this.logger.log(`Enviando pedido al microservicio de pedidos sin pagar.`)
 
         return
     }
