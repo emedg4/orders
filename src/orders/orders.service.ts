@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { OrdersEntity } from "./entities/orders.entity";
 import { Repository } from 'typeorm';
 import { LIST_ORDERS, UNPAID_ORDERS } from "./constant/services";
-import { INGRESADOS, SINPAGAR, PAGADO } from "./constant/Estatus"
+import { INGRESADOS, SINPAGAR, PAGADO, ENPREPARACION, ENDESPACHO, CANCELADOS, FINALIZADOS } from "./constant/Estatus"
 import { ListOrders } from "./dto/listOrders";
 import { GetOrdersDTO } from "./dto/getOrders";
 import { ModifyOrderStatusDTO } from "./dto/modifyOrderStatus";
@@ -58,16 +58,25 @@ export class OrdersService {
     }
 
     async modifyOrderStatus(data: ModifyOrderStatusDTO): Promise<ListOrders> {
-        const modified = await this.ordersRepository.update({Pedido: data.pedido}, {EstatusPedido: data.status_nuevo})
 
-        this.logger.log(modified, "Order Modified")
-
-        const orderToList: ListOrders = {
-            actual: data.status_nuevo,
-            previo: data.status_previo
+        if(data.status.status == INGRESADOS){
+            const modified = await this.ordersRepository.update({Pedido: data.pedido}, {EstatusPago: data.status.nuevo})
+            console.log(`webos`)
+            return null;
         }
 
-        return orderToList;
+        if(data.status.status == ENPREPARACION || ENDESPACHO || FINALIZADOS || CANCELADOS ){
+            const orderToList: ListOrders = {
+                actual: data.status.nuevo,
+                previo: data.status.previo
+            }
+            this.logger.log("Order Modified")
+            await this.ordersRepository.update({Pedido: data.pedido}, {EstatusPedido: data.status.nuevo})
+
+            return orderToList;
+        }
+
+
     }
 
     async getByStatusFilter( filter: any ) {
@@ -90,7 +99,7 @@ export class OrdersService {
     async getAll(): Promise<Array<OrdersEntity>> {
         const orders: Array<OrdersEntity> = await this.ordersRepository.find(); 
 
-        this.logger.log(orders, "Getting all orders")
+        this.logger.log("Getting all orders")
 
         return orders
     }

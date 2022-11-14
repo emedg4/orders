@@ -38,14 +38,16 @@ export class OrdersController {
         }
     }
 
-    @EventPattern("modifyOrder")
+    @EventPattern("Modify_Orders")
     async modifyOrderStatus(@Payload() data: ModifyOrderStatusDTO, @Ctx() context: RmqContext) {
         try {
-            const orderToList: ListOrders = await this.ordersService.modifyOrderStatus(data)
+            const orderToList = await this.ordersService.modifyOrderStatus(data)
             this.modifyOrderMicroserviceService.ack(context)
-
-            this.ordersService.listOrders(orderToList)
-
+            if(orderToList !== null){
+                this.ordersService.listOrders(orderToList)
+                return
+            }
+            this.logger.log(`Pedido ${data.pedido} Cambio a ${data.status.status}`)
             return;
             
         } catch (error) {
