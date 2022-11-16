@@ -61,7 +61,6 @@ export class OrdersService {
 
         if(data.status.status == INGRESADOS){
             const modified = await this.ordersRepository.update({Pedido: data.pedido}, {EstatusPago: data.status.nuevo})
-            console.log(`webos`)
             return null;
         }
 
