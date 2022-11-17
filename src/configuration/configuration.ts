@@ -12,12 +12,9 @@ export default () => ({
         unpaid_orders_queue: process.env.UNPAID_ORDERS_QUEUE,
         url: process.env.RABBITMQ_URL
     },
-    db: {
-        url: process.env.DB_URL,
-        port: process.env.DB_PORT,
-        user: process.env.DB_USER,
-        pass: process.env.DB_PASS,
-        database: process.env.DATABASE
+    mongo: {
+        uri: process.env.MONGO_URI
+
     }
 })
 

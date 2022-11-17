@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Logger,  } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { fsyncSync } from 'fs';
+import { OrdersExceptions } from 'src/Exceptions/ordersExceptions';
 import { ModifyOrderMicroserviceService } from 'src/microservices/modifyOrder/modifyOrderMicroservice.service';
 import { NewOrderService } from '../microservices/newOrder/newOrder.service';
-import { CreatedOrder } from './dto/createdOrder';
-import { CreateNewOrder } from './dto/createNewOrder';
-import { GetOrdersDTO } from './dto/getOrders';
-import { ListOrders } from './dto/listOrders';
-import { ModifyOrderStatusDTO } from './dto/modifyOrderStatus';
+import { MODIFY_ORDERS_QUEUE, NEW_ORDER_QUEUE } from './constant/queues';
+import { GET_ORDERS } from './constant/uris';
+import { CreateOrder } from './dto/createOrder';
+import { ErrorCodes } from './enums/errorCodes';
+
 import { OrdersService } from './orders.service';
 
 @Controller()
@@ -20,84 +20,33 @@ export class OrdersController {
         this.logger = new Logger(OrdersController.name);
     }
 
-    @EventPattern("newOrder")
-    async getNewOrder(@Payload() data: CreateNewOrder, @Ctx() context: RmqContext){
-        try {
-            const order: CreatedOrder = await this.ordersService.createNewOrder(data, context);
-            this.newOrderService.ack(context)
+    @EventPattern(NEW_ORDER_QUEUE)
+    async getNewOrder(@Payload() data: CreateOrder, @Ctx() context: RmqContext){
 
-            const listOrders: ListOrders = { actual: order.status, previo: null}
-            this.ordersService.listOrders(listOrders);
-            if(data.estatus_pago == "Sin Pagar"){
-                this.ordersService.sendToUnpaidOrdersQueue(order);
-            }
-            return;
-            
-        } catch (error) {
-            this.logger.error(error)       
-        }
-    }
+        const createdOrder = await this.ordersService.createNewOrder(data);
 
-    @EventPattern("Modify_Orders")
-    async modifyOrderStatus(@Payload() data: ModifyOrderStatusDTO, @Ctx() context: RmqContext) {
-        try {
-            const orderToList = await this.ordersService.modifyOrderStatus(data)
-            this.modifyOrderMicroserviceService.ack(context)
-            if(orderToList !== null){
-                this.ordersService.listOrders(orderToList)
-                return
-            }
-            this.logger.log(`Pedido ${data.pedido} Cambio a ${data.status.status}`)
-            return;
-            
-        } catch (error) {
-            this.logger.error(error)
+        if(createdOrder == ErrorCodes.TENANTDOESNOTEXIST){
+            const error = await new OrdersExceptions(OrdersService.name, "createNewOrder")
+            this.logger.log(await error.tenantDoesntExist(data.tenant))
+            this.newOrderService.ack(context);
 
-            return;
-        }
-
-    }
-
-    @Get("getOrders")
-    async getAllOrders(): Promise<GetOrdersDTO[]>{
-        try {
-            const allOrders = await this.ordersService.getAll();
-            return allOrders
-            
-        } catch (error) {
-            this.logger.error(error)
-        }
-    }
-    /**
-     * Service consumed by ListORders
-     * @param query 
-     * @returns 
-     */
-    @Get("getByFilter")
-    async getByStatusFilter(@Query() query: any) {
-        try {
-            const filtrado = await this.ordersService.getByStatusFilter(query);
-            
-            return filtrado
-
-        } catch (error) {
-            this.logger.error(error)
-            
             return
         }
+
+        this.newOrderService.ack(context);
+        return
+
     }
 
-    @Get("getByHeavyFilter")
-    async getByHeavyFilter(@Body() body: any) {
-        try {
-            const filtrado = await this.ordersService.getByHeavyFilter(body);
-            
-            return filtrado
-
-        } catch (error) {
-            this.logger.error(error)
-            
-            return
-        }        
+    @EventPattern(MODIFY_ORDERS_QUEUE)
+    async modifyOrderStatus(@Payload() data, @Ctx() context: RmqContext) {
+        
     }
+
+    @Get(GET_ORDERS)
+    async getAllOrders(){
+        return this.ordersService.getAllOrders()
+    }
+
+    
 }

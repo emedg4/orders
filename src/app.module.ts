@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './configuration/configuration'
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrdersModule } from './orders/orders.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { MoldModule } from './mold/mold.module';
 
 
 
@@ -11,22 +13,16 @@ import { OrdersModule } from './orders/orders.module';
     isGlobal: true,
     load: [configuration]
   }),
-TypeOrmModule.forRootAsync({
-  imports: [ConfigModule],
-  inject: [ConfigService],
-  useFactory: (configService: ConfigService) => ({
-    type: 'postgres',
-    host: configService.get('db.host'),
-    port: configService.get<number>('db.port'),
-    username: configService.get('db.user'),
-    password: configService.get('db.pass'),
-    database: configService.get('db.database'),
-    autoLoadEntities: true,
-    synchronize: true
-  })
-
-}),
-OrdersModule
+    MongooseModule.forRoot('mongodb://127.0.0.1:49155/orders'),
+  // MongooseModule.forRootAsync({
+  //   inject: [ConfigService],
+  //   useFactory: async ( configService: ConfigService) => {
+  //     uri: configService.get<string>("mongo.uri")
+      
+  //   }
+  // }),
+OrdersModule,
+MoldModule
 ],
   controllers: [],
   providers: [],
