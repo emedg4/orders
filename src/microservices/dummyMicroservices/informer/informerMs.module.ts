@@ -23,7 +23,7 @@ export class InformerMicroserviceModule {
               transport: Transport.RMQ,
               options: {
                 urls: [configService.get<string>('rbmq.url')],
-                queue: configService.get<string>('rbmq.informer_queue')
+                queue: configService.get<string>('rbmq.informer')
               },
             }),
             inject: [ConfigService]

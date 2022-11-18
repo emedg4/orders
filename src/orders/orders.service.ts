@@ -10,6 +10,8 @@ import { ErrorCodes } from "./enums/errorCodes";
 import { FINALIZADOS, INGRESADOS, PAGADO } from "./constant/Estatus";
 import { QueueSteps } from "./dto/queueSteps.dto";
 import { ModifyOrder } from "./dto/modifyOrder.dto";
+import { LoggingMessage } from "./dto/loggingMessage";
+import { model } from "mongoose";
 
 
 @Injectable()
@@ -64,6 +66,14 @@ export class OrdersService {
             const saveOrder = await this.ordersModel.create(order)
 
             this.logger.log(`Order saved. Order: ${order.pedido}`)
+
+            const messageToInformer1: LoggingMessage = {
+                pedido: data.pedido,
+                microservicioOrigen: OrdersService.name,
+                accion: "Recibido pedido de Vitrina. Guardando en DB",
+                data: null
+            }
+            this.informerClient.emit(INFORMER, messageToInformer1)
             
             this.sendToQueue(order);
 
@@ -106,10 +116,18 @@ export class OrdersService {
         }
         const pedido = order.pedido;
         const modelModified = await this.ordersModel.findOneAndUpdate({ pedido }, modifiedOrder)
+
+        const messageToInformer1: LoggingMessage = {
+            pedido: modelModified.pedido,
+            microservicioOrigen: OrdersService.name,
+            accion: `Pedido Modificado`,
+            data: null
+        }
         if(order.status_principal == FINALIZADOS){
             return
         }
         else{
+            
             this.sendToQueue(order)
 
         }
@@ -141,37 +159,70 @@ export class OrdersService {
         }
 
 
-
-        // data.steps.map ( async (value) => {
-            
-        //     if(value.done == false){
-        //         nextQueue = value.queue;
-        //     }
-
-        // })
-        console.log(nextQueue)
                 switch (nextQueue) {
                     case DUMMY1:
-                       this.dummy1Client.emit(nextQueue, data) 
+                        const messageToInformer1: LoggingMessage = {
+                            pedido: data.pedido,
+                            microservicioOrigen: OrdersService.name,
+                            accion: "Enviando pedido al microservicio --Dummy1--",
+                            data: `Queue --${DUMMY1}`
+                        }
+                        this.informerClient.emit(INFORMER, messageToInformer1)
+                        this.dummy1Client.emit(nextQueue, data) 
                         break;
 
                     case DUMMY2:
+                        const messageToInformer2: LoggingMessage = {
+                            pedido: data.pedido,
+                            microservicioOrigen: OrdersService.name,
+                            accion: "Enviando pedido al microservicio --Dummy2--",
+                            data: `Queue --${DUMMY2}`
+                        }
+                        this.informerClient.emit(INFORMER, messageToInformer2)
                        this.dummy2Client.emit(nextQueue, data) 
                         break;
 
                     case DUMMY3:
+                        const messageToInformer3: LoggingMessage = {
+                            pedido: data.pedido,
+                            microservicioOrigen: OrdersService.name,
+                            accion: "Enviando pedido al microservicio --Dummy3--",
+                            data: `Queue --${DUMMY3}`
+                        }
+                        this.informerClient.emit(INFORMER, messageToInformer3)
                        this.dummy3Client.emit(nextQueue, data) 
                         break;
 
                     case DUMMY4:
+                        const messageToInformer4: LoggingMessage = {
+                            pedido: data.pedido,
+                            microservicioOrigen: OrdersService.name,
+                            accion: "Enviando pedido al microservicio --Dummy4--",
+                            data: `Queue --${DUMMY4}`
+                        }
+                        this.informerClient.emit(INFORMER, messageToInformer4)
                        this.dummy4Client.emit(nextQueue, data) 
                         break;
 
                     case DUMMY5:
+                        const messageToInformer5: LoggingMessage = {
+                            pedido: data.pedido,
+                            microservicioOrigen: OrdersService.name,
+                            accion: "Enviando pedido al microservicio --Dummy5--",
+                            data: `Queue --${DUMMY5}`
+                        }
+                        this.informerClient.emit(INFORMER, messageToInformer5)
                         this.dummy5Client.emit(nextQueue, data) 
                             break;
 
                     case UNPAID_ORDERS:
+                        const messageToInformerUnpaidOrders: LoggingMessage = {
+                            pedido: data.pedido,
+                            microservicioOrigen: OrdersService.name,
+                            accion: "Enviando pedido al microservicio --UnpaidOrders--",
+                            data: `Queue --${UNPAID_ORDERS}`
+                        }
+                        this.informerClient.emit(INFORMER, messageToInformerUnpaidOrders)
                         this.unpaidOrdersClient.emit(nextQueue, data)
                         break;
                     case undefined:
@@ -181,13 +232,7 @@ export class OrdersService {
                         break;
                 }
 
-                const messageToInformer = {
-                    pedido: data.pedido,
-                    paso: `Pedido pasando por del microservicio de ordenes a la cola  --${nextQueue}--`,
-                }
-
-                this.informerClient.emit(INFORMER, messageToInformer )
-
+          
                 this.logger.log(`Enviando pedido a la cola de: RMQ-Queue: --${nextQueue}--.`)
                 return
 
