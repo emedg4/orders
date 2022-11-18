@@ -9,7 +9,7 @@ services:
     networks:
       - poc
     ports:
-      - 27017-27017
+      - 27017:27017
 
 networks:
   poc:  

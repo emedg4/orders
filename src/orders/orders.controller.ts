@@ -1,11 +1,12 @@
-import { Controller, Get, Logger,  } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger,  } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { OrdersExceptions } from 'src/Exceptions/ordersExceptions';
 import { ModifyOrderMicroserviceService } from 'src/microservices/modifyOrder/modifyOrderMicroservice.service';
 import { NewOrderService } from '../microservices/newOrder/newOrder.service';
 import { MODIFY_ORDERS_QUEUE, NEW_ORDER_QUEUE } from './constant/queues';
-import { GET_ORDERS } from './constant/uris';
+import { DELETE_ORDERS, GET_ORDERS } from './constant/uris';
 import { CreateOrder } from './dto/createOrder';
+import { ModifyOrder } from './dto/modifyOrder.dto';
 import { ErrorCodes } from './enums/errorCodes';
 
 import { OrdersService } from './orders.service';
@@ -39,13 +40,22 @@ export class OrdersController {
     }
 
     @EventPattern(MODIFY_ORDERS_QUEUE)
-    async modifyOrderStatus(@Payload() data, @Ctx() context: RmqContext) {
+    async modifyOrderStatus(@Payload() data: ModifyOrder, @Ctx() context: RmqContext) {
+        this.ordersService.modifyOrder(data);
+        this.modifyOrderMicroserviceService.ack(context)
+        return
         
     }
 
     @Get(GET_ORDERS)
     async getAllOrders(){
         return this.ordersService.getAllOrders()
+    }
+
+    @Delete(DELETE_ORDERS)
+    async deleteOrders(@Body() body ){
+        return this.ordersService.deleteOrders(body);
+        
     }
 
     

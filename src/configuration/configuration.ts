@@ -10,7 +10,13 @@ export default () => ({
         list_orders_queue: process.env.LIST_ORDERS_QUEUE,
         modify_order_queue: process.env.MODIFY_ORDER_QUEUE,
         unpaid_orders_queue: process.env.UNPAID_ORDERS_QUEUE,
-        url: process.env.RABBITMQ_URL
+        url: process.env.RABBITMQ_URL,
+        dummy1_queue: process.env.QUEUE_DUMMY_ONE,
+        dummy2_queue: process.env.QUEUE_DUMMY_TWO,
+        dummy3_queue: process.env.QUEUE_DUMMY_THREE,
+        dummy4_queue: process.env.QUEUE_DUMMY_FOUR,
+        dummy5_queue: process.env.QUEUE_DUMMY_FIVE,
+        informer: process.env.INFORMER_QUEUE,
     },
     mongo: {
         uri: process.env.MONGO_URI

@@ -32,6 +32,9 @@ export class Order {
     status_principal: string;
 
     @Prop()
+    status_pago: string;
+
+    @Prop()
     tenant: String;
 
     @Prop()

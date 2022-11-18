@@ -18,4 +18,6 @@ export class CreateOrder {
 
     public metodo_pago: string;
 
+    public estatus_pago: string;
+
 }

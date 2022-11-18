@@ -21,6 +21,12 @@ export class OrdersModel {
     }
 
     async findOneAndUpdate(ordersFilterQuery: FilterQuery<Order>, order: Partial<Order>): Promise<Order> {
-        return this.ordersModel.findOneAndUpdate(ordersFilterQuery, order);
+        const returnedObject = await this.ordersModel.findOneAndUpdate(ordersFilterQuery, order, { new: true });
+        console.log(returnedObject)
+        return returnedObject
+    }
+
+    async deleteAll(data){
+        return this.ordersModel.deleteMany({data})
     }
 }
