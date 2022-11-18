@@ -129,12 +129,26 @@ export class OrdersService {
     sendToQueue(data: Order) {
         let nextQueue;
         console.log(data.steps)
-        data.steps.map ( async (value) => {
-            if(value.done == false){
-                nextQueue = value.queue;
-                return
+
+        for (let index = 0; index < data.steps.length; index++) {
+            const element = data.steps[index];
+
+            if(element.done == false){
+                nextQueue = element.queue;
+                break;
             }
-        })
+
+        }
+
+
+
+        // data.steps.map ( async (value) => {
+            
+        //     if(value.done == false){
+        //         nextQueue = value.queue;
+        //     }
+
+        // })
         console.log(nextQueue)
                 switch (nextQueue) {
                     case DUMMY1:
