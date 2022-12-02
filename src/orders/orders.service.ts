@@ -73,7 +73,7 @@ export class OrdersService {
                 accion: "Recibido pedido de Vitrina. Guardando en DB",
                 data: null
             }
-            this.informerClient.emit(INFORMER, messageToInformer1)
+            // this.informerClient.emit(INFORMER, messageToInformer1)
             
             this.sendToQueue(order);
 
@@ -167,7 +167,7 @@ export class OrdersService {
                             accion: "Enviando pedido al microservicio --SAP--",
                             data: `Queue --SAP`
                         }
-                        this.informerClient.emit(INFORMER, messageToInformer1)
+                        //this.informerClient.emit(INFORMER, messageToInformer1)
                         this.dummy1Client.emit(nextQueue, data) 
                         break;
 
@@ -178,7 +178,7 @@ export class OrdersService {
                             accion: "Enviando pedido al microservicio --Facturacion--",
                             data: `Queue --Facturacion`
                         }
-                        this.informerClient.emit(INFORMER, messageToInformer2)
+                        //this.informerClient.emit(INFORMER, messageToInformer2)
                        this.dummy2Client.emit(nextQueue, data) 
                         break;
 
@@ -189,7 +189,7 @@ export class OrdersService {
                             accion: "Enviando pedido al microservicio --Revision Sovos--",
                             data: `Queue --Revision Sovos`
                         }
-                        this.informerClient.emit(INFORMER, messageToInformer3)
+                        //this.informerClient.emit(INFORMER, messageToInformer3)
                        this.dummy3Client.emit(nextQueue, data) 
                         break;
 
@@ -200,7 +200,7 @@ export class OrdersService {
                             accion: "Enviando pedido al microservicio --Generar boleta--",
                             data: `Queue --Generar boleta`
                         }
-                        this.informerClient.emit(INFORMER, messageToInformer4)
+                        //this.informerClient.emit(INFORMER, messageToInformer4)
                        this.dummy4Client.emit(nextQueue, data) 
                         break;
 
@@ -211,7 +211,7 @@ export class OrdersService {
                             accion: "Enviando pedido al microservicio --Finalizacion de pedido--",
                             data: `Queue --Finalizacion de pedido`
                         }
-                        this.informerClient.emit(INFORMER, messageToInformer5)
+                        //this.informerClient.emit(INFORMER, messageToInformer5)
                         this.dummy5Client.emit(nextQueue, data) 
                             break;
 
@@ -222,7 +222,7 @@ export class OrdersService {
                             accion: "Enviando pedido al microservicio --UnpaidOrders--",
                             data: `Queue --${UNPAID_ORDERS}`
                         }
-                        this.informerClient.emit(INFORMER, messageToInformerUnpaidOrders)
+                        //this.informerClient.emit(INFORMER, messageToInformerUnpaidOrders)
                         this.unpaidOrdersClient.emit(nextQueue, data)
                         break;
                     case undefined:

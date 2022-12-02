@@ -13,7 +13,7 @@ import { MoldModule } from './mold/mold.module';
     isGlobal: true,
     load: [configuration]
   }),
-    MongooseModule.forRoot('mongodb://20.168.238.184:27017/orders'),
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/orders'),
   // MongooseModule.forRootAsync({
   //   inject: [ConfigService],
   //   useFactory: async ( configService: ConfigService) => {
