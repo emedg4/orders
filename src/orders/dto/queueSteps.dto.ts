@@ -1,11 +1,9 @@
+import { Steps } from "src/mold/dto/steps";
+
 export class QueueSteps {
 
-    id: string;
+    statusPedido: string;
 
-    queue: string;
-
-    done: boolean;
-
-    isManual: boolean;
+    steps: Steps[];
 
 }

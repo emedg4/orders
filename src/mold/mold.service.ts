@@ -24,7 +24,6 @@ export class MoldService {
     async createMold( steps: Tenant){
         return this.moldModel.create({
             tenant: steps.tenant,
-            status_principal: INGRESADOS,
             steps: steps.queueSteps
         });
     }

@@ -26,14 +26,18 @@ export class OrdersService {
             return 4000
         }
         let steps: QueueSteps[] = mold.steps;
-        if(data.estatus_pago == PAGADO){
-            steps.map( async(value, index, array) => {
-                if(value.queue == UNPAID_ORDERS ) {
-                    steps[index].done = true
-                }
+
+        if(data.estatus_pago == PAGADO) {
+            steps.map( async (value, fQueueStepsIndex, array) => {
+                let queueStepsIndex = fQueueStepsIndex;
+                value.steps.map( async (value, fIndex, array) => {
+                    let stepsIndex = fIndex;
+                    if(value.queue == UNPAID_ORDERS){
+                        steps[queueStepsIndex].steps[stepsIndex].done == true;
+                    }
+                })
             })
         }
-
         if(mold == null){
             return ErrorCodes.TENANTDOESNOTEXIST;
         }

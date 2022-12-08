@@ -10,7 +10,7 @@ export class Mold{
     tenant: string;
     
     @Prop()
-    steps: QueueSteps[]
+    steps: QueueSteps[];
 
 }
 
