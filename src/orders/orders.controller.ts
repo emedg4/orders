@@ -6,6 +6,7 @@ import { NewOrderService } from '../microservices/newOrder/newOrder.service';
 import { MODIFY_ORDERS_QUEUE, NEW_ORDER_QUEUE } from './constant/queues';
 import { DELETE_ORDERS, GET_ORDERS } from './constant/uris';
 import { CreateOrder } from './dto/createOrder';
+import { ModifiedOrder } from './dto/modifiedOrder';
 import { ModifyOrder } from './dto/modifyOrder.dto';
 import { ErrorCodes } from './enums/errorCodes';
 
@@ -33,15 +34,16 @@ export class OrdersController {
 
             return
         }
-
         this.newOrderService.ack(context);
+        this.ordersService.sendToOrdersEngine(createdOrder);
+        
         return
 
     }
 
     @EventPattern(MODIFY_ORDERS_QUEUE)
-    async modifyOrderStatus(@Payload() data: ModifyOrder, @Ctx() context: RmqContext) {
-        this.ordersService.modifyOrder(data);
+    async modifyOrderStatus(@Payload() payload: ModifiedOrder, @Ctx() context: RmqContext) {
+        this.ordersService.modifyOrder(payload);
         this.modifyOrderMicroserviceService.ack(context)
         return
         

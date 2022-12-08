@@ -14,8 +14,8 @@ async function bootstrap() {
   const modifyOrderService = app.get<ModifyOrderMicroserviceService>(ModifyOrderMicroserviceService)
   const configService = app.get(ConfigService)
 
-  app.connectMicroservice(newOrderService.getOptions(configService.get('rbmq.new_order_queue')))
-  app.connectMicroservice(modifyOrderService.getOptions(configService.get('rbmq.modify_order_queue')))
+  app.connectMicroservice(newOrderService.getOptions(configService.get('rbmq.queue.new_order')))
+  app.connectMicroservice(modifyOrderService.getOptions(configService.get('rbmq.queue.modify_order')))
 
   await app.startAllMicroservices();
   

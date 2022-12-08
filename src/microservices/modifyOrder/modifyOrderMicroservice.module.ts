@@ -23,7 +23,7 @@ export class ModifyOrderMicroserviceModule {
               transport: Transport.RMQ,
               options: {
                 urls: [configService.get<string>('rbmq.url')],
-                queue: configService.get<string>('rbmq.modify_order_queue')
+                queue: configService.get<string>('rbmq.queue.modify_order')
               },
             }),
             inject: [ConfigService]

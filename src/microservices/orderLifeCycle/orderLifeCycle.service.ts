@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 
 @Injectable()
-export class Dummy3MicroserviceService {
+export class OrderLifeCycleService {
     constructor(private readonly configService: ConfigService){}
     getOptions(queue: string, noAck = false): RmqOptions {
         return {

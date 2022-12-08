@@ -10,9 +10,6 @@ export class Mold{
     tenant: string;
     
     @Prop()
-    status_principal: string;
-
-    @Prop()
     steps: QueueSteps[]
 
 }

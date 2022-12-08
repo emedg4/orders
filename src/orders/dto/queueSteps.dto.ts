@@ -1,8 +1,11 @@
 export class QueueSteps {
+
+    id: string;
+
     queue: string;
 
-    nombre: string;
-
     done: boolean;
+
+    isManual: boolean;
 
 }

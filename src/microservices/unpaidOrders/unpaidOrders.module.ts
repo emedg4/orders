@@ -23,7 +23,7 @@ export class UnpaidOrderMicroserviceModule {
               transport: Transport.RMQ,
               options: {
                 urls: [configService.get<string>('rbmq.url')],
-                queue: configService.get<string>('rbmq.unpaid_orders_queue')
+                queue: configService.get<string>('rbmq.queue.unpaid_orders')
               },
             }),
             inject: [ConfigService]

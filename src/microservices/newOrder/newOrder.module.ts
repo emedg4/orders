@@ -23,7 +23,7 @@ export class NewOrderModule {
               transport: Transport.RMQ,
               options: {
                 urls: [configService.get<string>('rbmq.url')],
-                queue: configService.get<string>('rbmq.new_order_queue')
+                queue: configService.get<string>('rbmq.queue.new_order')
               },
             }),
             inject: [ConfigService]
