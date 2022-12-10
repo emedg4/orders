@@ -12,7 +12,7 @@ export default () => ({
             list_orders: process.env.LIST_ORDERS_QUEUE,
             modify_order: process.env.MODIFY_ORDER_QUEUE,
             unpaid_orders: process.env.UNPAID_ORDERS_QUEUE,
-            informer: process.env.INFORMER_QUEUE,
+            toOrdersEngine: process.env.TO_ORDERS_ENGINE
         }
 
         

@@ -25,6 +25,7 @@ export class OrdersController {
     @EventPattern(NEW_ORDER_QUEUE)
     async getNewOrder(@Payload() data: CreateOrder, @Ctx() context: RmqContext){
 
+        console.log("Data arrived", data)
         const createdOrder = await this.ordersService.createNewOrder(data);
 
         if(createdOrder == ErrorCodes.TENANTDOESNOTEXIST){

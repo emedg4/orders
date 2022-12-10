@@ -63,17 +63,20 @@ export class OrdersService {
         }
     }
     async sendToOrdersEngine(order: Order){
-        const orderToSend: ModifiedOrder = new ModifiedOrder();
-        orderToSend.order = order;
-        orderToSend.emmiterData.queue = null;
-        orderToSend.emmiterData.stepId = null;
-        orderToSend.emmiterData.isNew = true;
-        orderToSend.emmiterData.isDone = true;
-        orderToSend.emmiterData.stepNumber = null;
-        orderToSend.emmiterData.retry = false;
-
-
-        this.ordersEngineClient.emit(TO_ORDERS_ENGINE, orderToSend)
+        const orderToSend: ModifiedOrder = {
+        order: order,
+        emmiterData:{
+            queue: null,
+            isNew: true,
+            isDone: true,
+            stepNumber: null,
+            perStatusStep: null,
+            retry: false,
+            stepId: null
+        }
+    }   
+        console.log(`sending to engine` ,orderToSend)
+        await this.ordersEngineClient.emit(TO_ORDERS_ENGINE, orderToSend)
         return
     }
     /**
